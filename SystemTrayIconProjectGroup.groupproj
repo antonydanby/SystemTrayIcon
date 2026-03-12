@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{BAD2FB23-5589-48C1-AD6F-728DE972FCA2}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SystemTrayIconPackage.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SystemTrayIconPackage">
+        <MSBuild Projects="SystemTrayIconPackage.dproj"/>
+    </Target>
+    <Target Name="SystemTrayIconPackage:Clean">
+        <MSBuild Projects="SystemTrayIconPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SystemTrayIconPackage:Make">
+        <MSBuild Projects="SystemTrayIconPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SystemTrayIconPackage"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SystemTrayIconPackage:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SystemTrayIconPackage:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

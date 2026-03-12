@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{20C2EF01-7383-4AE4-AA93-5202DC4666C0}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SystemTrayIconPackage.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demo\TrayDemo.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SystemTrayIconPackage">
+        <MSBuild Projects="SystemTrayIconPackage.dproj"/>
+    </Target>
+    <Target Name="SystemTrayIconPackage:Clean">
+        <MSBuild Projects="SystemTrayIconPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SystemTrayIconPackage:Make">
+        <MSBuild Projects="SystemTrayIconPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TrayDemo">
+        <MSBuild Projects="Demo\TrayDemo.dproj"/>
+    </Target>
+    <Target Name="TrayDemo:Clean">
+        <MSBuild Projects="Demo\TrayDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TrayDemo:Make">
+        <MSBuild Projects="Demo\TrayDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SystemTrayIconPackage;TrayDemo"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SystemTrayIconPackage:Clean;TrayDemo:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SystemTrayIconPackage:Make;TrayDemo:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
