@@ -57,6 +57,7 @@ begin
   end;
 end;
 ```
+The demo shows this idea in practice
 
 ## Component Properties
 

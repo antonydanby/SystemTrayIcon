@@ -22,7 +22,7 @@ type
     procedure btnHideClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    FAllowClose: Boolean;
+    fAllowClose: Boolean;
   public
     { Public declarations }
   end;
@@ -37,7 +37,7 @@ implementation
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   // Initialize the flag to prevent accidental closure
-  FAllowClose := False;
+  fAllowClose := False;
 
   // Link the tray icon to this form and the popup menu
   TrayIcon.ApplicationForm := Self;
@@ -50,8 +50,8 @@ end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  // If FAllowClose is false, we intercept the close command (X button or Alt+F4)
-  if not FAllowClose then
+  // If fAllowClose is false, we intercept the close command (X button or Alt+F4)
+  if not fAllowClose then
   begin
     CanClose := False; // Prevent form destruction
     Self.Hide;         // Hide the main window
@@ -74,7 +74,7 @@ end;
 procedure TFormMain.MenuExitClick(Sender: TObject);
 begin
   // Set the flag to allow the application to truly terminate
-  FAllowClose := True;
+  fAllowClose := True;
   Application.Terminate;
 end;
 
