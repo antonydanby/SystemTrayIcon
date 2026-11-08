@@ -13,13 +13,13 @@ const
 type
   TSystemTrayIcon = class(TComponent)
   private
-    FApplicationForm: TForm;
-    FPopupMenu: TPopupMenu;
-    FIcon: TIcon;
-    FHint: string;
-    FIsIconVisible: Boolean;
-    FWindowHandle: HWND; // Internal handle to receive messages
-    FRestoreOnLeftClick: Boolean;
+    fApplicationForm: TForm;
+    fPopupMenu: TPopupMenu;
+    fIcon: TIcon;
+    fHint: string;
+    fIsIconVisible: Boolean;
+    fWindowHandle: HWND; // Internal handle to receive messages
+    fRestoreOnLeftClick: Boolean;
     procedure SetIcon(const Value: TIcon);
     procedure SetHint(const Value: string);
     procedure SetPopupMenu(const Value: TPopupMenu);
@@ -36,11 +36,11 @@ type
     procedure HideIcon;
     procedure RestoreApplication;
   published
-    property ApplicationForm: TForm read FApplicationForm write FApplicationForm;
-    property Icon: TIcon read FIcon write SetIcon;
-    property Hint: string read FHint write SetHint;
-    property PopupMenu: TPopupMenu read FPopupMenu write SetPopupMenu;
-    property RestoreOnLeftClick: Boolean read FRestoreOnLeftClick write FRestoreOnLeftClick default True;
+    property ApplicationForm: TForm read fApplicationForm write fApplicationForm;
+    property Icon: TIcon read fIcon write SetIcon;
+    property Hint: string read fHint write SetHint;
+    property PopupMenu: TPopupMenu read fPopupMenu write SetPopupMenu;
+    property RestoreOnLeftClick: Boolean read fRestoreOnLeftClick write fRestoreOnLeftClick default True;
   end;
 
 procedure Register;
@@ -57,19 +57,19 @@ end;
 constructor TSystemTrayIcon.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FIcon := TIcon.Create;
-  FIsIconVisible := False;
-  FRestoreOnLeftClick := True; // Default to standard behavior
+  fIcon := TIcon.Create;
+  fIsIconVisible := False;
+  fRestoreOnLeftClick := True; // Default to standard behavior
   // Create a hidden window to receive tray messages
-  FWindowHandle := AllocateHWnd(WndProc);
+  fWindowHandle := AllocateHWnd(WndProc);
 end;
 
 destructor TSystemTrayIcon.Destroy;
 begin
   HideIcon;
-  if FWindowHandle <> 0 then
-    DeallocateHWnd(FWindowHandle);
-  FIcon.Free;
+  if fWindowHandle <> 0 then
+    DeallocateHWnd(fWindowHandle);
+  fIcon.Free;
   inherited Destroy;
 end;
 
@@ -82,39 +82,39 @@ begin
     case Msg.LParam of
       WM_LBUTTONUP: // Single left click
         begin
-          if FRestoreOnLeftClick then
+          if fRestoreOnLeftClick then
             RestoreApplication;
         end;
 
       WM_LBUTTONDBLCLK: // Double left click
         begin
           // If not already restored by single click, restore now
-          if not FRestoreOnLeftClick then
+          if not fRestoreOnLeftClick then
             RestoreApplication;
         end;
 
       WM_RBUTTONUP: // Right click
         begin
-          if Assigned(FPopupMenu) then
+          if Assigned(fPopupMenu) then
           begin
             GetCursorPos(P);
             // Required so the menu disappears when clicking away
-            SetForegroundWindow(FWindowHandle);
-            FPopupMenu.Popup(P.X, P.Y);
-            PostMessage(FWindowHandle, WM_NULL, 0, 0);
+            SetForegroundWindow(fWindowHandle);
+            fPopupMenu.Popup(P.X, P.Y);
+            PostMessage(fWindowHandle, WM_NULL, 0, 0);
           end;
         end;
     end;
   end
   else
-    Msg.Result := DefWindowProc(FWindowHandle, Msg.Msg, Msg.WParam, Msg.LParam);
+    Msg.Result := DefWindowProc(fWindowHandle, Msg.Msg, Msg.WParam, Msg.LParam);
 end;
 
 procedure TSystemTrayIcon.Loaded;
 begin
   inherited Loaded;
-  if (FApplicationForm = nil) and (Owner is TForm) then
-    FApplicationForm := TForm(Owner);
+  if (fApplicationForm = nil) and (Owner is TForm) then
+    fApplicationForm := TForm(Owner);
 end;
 
 procedure TSystemTrayIcon.Notification(AComponent: TComponent; Operation: TOperation);
@@ -122,35 +122,35 @@ begin
   inherited Notification(AComponent, Operation);
   if Operation = opRemove then
   begin
-    if AComponent = FPopupMenu then
-      FPopupMenu := nil;
-    if AComponent = FApplicationForm then
-      FApplicationForm := nil;
+    if AComponent = fPopupMenu then
+      fPopupMenu := nil;
+    if AComponent = fApplicationForm then
+      fApplicationForm := nil;
   end;
 end;
 
 procedure TSystemTrayIcon.SetIcon(const Value: TIcon);
 begin
-  FIcon.Assign(Value);
-  if FIsIconVisible then UpdateTrayIcon(NIM_MODIFY);
+  fIcon.Assign(Value);
+  if fIsIconVisible then UpdateTrayIcon(NIM_MODIFY);
 end;
 
 procedure TSystemTrayIcon.SetHint(const Value: string);
 begin
-  if FHint <> Value then
+  if fHint <> Value then
   begin
-    FHint := Value;
-    if FIsIconVisible then UpdateTrayIcon(NIM_MODIFY);
+    fHint := Value;
+    if fIsIconVisible then UpdateTrayIcon(NIM_MODIFY);
   end;
 end;
 
 procedure TSystemTrayIcon.SetPopupMenu(const Value: TPopupMenu);
 begin
-  if FPopupMenu <> Value then
+  if fPopupMenu <> Value then
   begin
-    if FPopupMenu <> nil then FPopupMenu.RemoveFreeNotification(Self);
-    FPopupMenu := Value;
-    if FPopupMenu <> nil then FPopupMenu.FreeNotification(Self);
+    if fPopupMenu <> nil then fPopupMenu.RemoveFreeNotification(Self);
+    fPopupMenu := Value;
+    if fPopupMenu <> nil then fPopupMenu.FreeNotification(Self);
   end;
 end;
 
@@ -161,46 +161,46 @@ begin
   ZeroMemory(@NID, SizeOf(NID));
   NID.cbSize := SizeOf(NID);
   // Route messages to our internal hidden window, not the Form
-  NID.Wnd := FWindowHandle;
+  NID.Wnd := fWindowHandle;
   NID.uID := TRAY_ID;
   NID.uFlags := NIF_MESSAGE or NIF_ICON or NIF_TIP;
   NID.uCallbackMessage := WM_TRAYICON;
 
-  if FIcon.HandleAllocated then
-    NID.hIcon := FIcon.Handle
+  if fIcon.HandleAllocated then
+    NID.hIcon := fIcon.Handle
   else
     NID.hIcon := Application.Icon.Handle;
 
-  StrPLCopy(NID.szTip, FHint, Length(NID.szTip) - 1);
+  StrPLCopy(NID.szTip, fHint, Length(NID.szTip) - 1);
 
   Shell_NotifyIcon(Operation, @NID);
 end;
 
 procedure TSystemTrayIcon.ShowIcon;
 begin
-  if not FIsIconVisible then
+  if not fIsIconVisible then
   begin
     UpdateTrayIcon(NIM_ADD);
-    FIsIconVisible := True;
+    fIsIconVisible := True;
   end;
 end;
 
 procedure TSystemTrayIcon.HideIcon;
 begin
-  if FIsIconVisible then
+  if fIsIconVisible then
   begin
     UpdateTrayIcon(NIM_DELETE);
-    FIsIconVisible := False;
+    fIsIconVisible := False;
   end;
 end;
 
 procedure TSystemTrayIcon.RestoreApplication;
 begin
-  if Assigned(FApplicationForm) then
+  if Assigned(fApplicationForm) then
   begin
-    FApplicationForm.Show;
-    FApplicationForm.WindowState := wsNormal;
-    FApplicationForm.BringToFront;
+    fApplicationForm.Show;
+    fApplicationForm.WindowState := wsNormal;
+    fApplicationForm.BringToFront;
     HideIcon;
   end;
 end;
